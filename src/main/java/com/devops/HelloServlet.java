@@ -11,6 +11,6 @@ public class HelloServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         resp.setContentType("text/plain");
-        resp.getWriter().println("Hello World from Tomcat!");
+        resp.getWriter().println("Hello World : Automated deployment successful");
     }
 }
