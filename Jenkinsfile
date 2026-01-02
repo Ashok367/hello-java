@@ -9,8 +9,7 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git branch: 'main',
-            url: 'https://github.com/Ashok367/hello-java.git'
+        checkout scm
       }
     }
 
@@ -23,10 +22,18 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('sonarqube') {
-          sh 'mvn sonar:sonar'
+          sh 'mvn sonar:sonar -Dsonar.projectKey=hello-java'
         }
       }
     }
+    stage('Quality Gate') {
+  steps {
+    timeout(time: 1, unit: 'MINUTES') {
+      waitForQualityGate abortPipeline: true
+    }
+  }
+}
+
 
     stage('Deploy to Tomcat') {
       steps {
@@ -39,5 +46,6 @@ pipeline {
         '''
       }
     }
+
   }
 }
