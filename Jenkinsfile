@@ -36,17 +36,25 @@ pipeline {
 }
 
 
-    stage('Deploy to Tomcat') {
-      steps {
-        sh '''
-          rm -rf $TOMCAT_HOME/webapps/hello-1.0*
-          cp target/hello-1.0.war $TOMCAT_HOME/webapps/
-          $TOMCAT_HOME/bin/shutdown.sh || true
-          sleep 3
-          $TOMCAT_HOME/bin/startup.sh
-        '''
-      }
-    }
+  stage('Deploy to Tomcat') {
+  steps {
+    sh '''
+      echo "Stopping Tomcat..."
+      $TOMCAT_HOME/bin/shutdown.sh || true
+      sleep 3
+
+      echo "Removing old deployment..."
+      rm -rf $TOMCAT_HOME/webapps/hello-1.0*
+
+      echo "Deploying new WAR..."
+      cp target/hello-1.0.war $TOMCAT_HOME/webapps/
+
+      echo "Starting Tomcat..."
+      $TOMCAT_HOME/bin/startup.sh
+    '''
+  }
+}
+
 
   }
 }
