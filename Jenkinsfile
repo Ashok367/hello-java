@@ -22,7 +22,7 @@ pipeline {
    stage('SonarQube Analysis') {
   steps {
     withSonarQubeEnv('sonarqube') {
-      sh 'mvn sonar:sonar -Dsonar.projectKey=hello-java'
+     sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=hello-java'
     }
   }
 }
