@@ -19,21 +19,13 @@ pipeline {
       }
     }
 
-    stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv('sonarqube') {
-          withCredentials([
-            string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')
-          ]) {
-            sh '''
-              mvn sonar:sonar \
-              -Dsonar.projectKey=hello-java \
-              -Dsonar.login=$SONAR_TOKEN
-            '''
-          }
-        }
-      }
+   stage('SonarQube Analysis') {
+  steps {
+    withSonarQubeEnv('sonarqube') {
+      sh 'mvn sonar:sonar -Dsonar.projectKey=hello-java'
     }
+  }
+}
 
     stage('Quality Gate') {
       steps {
