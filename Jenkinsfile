@@ -21,12 +21,12 @@ pipeline {
 
     stage('SonarQube Analysis') {
   steps {
-    withCredentials([string(credentialsId: 'sonar-user-token', variable: 'SONAR_TOKEN')]) {
+    withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
       sh """
         mvn sonar:sonar \
           -Dsonar.projectKey=hello-java \
           -Dsonar.host.url=http://44.211.175.215:9000 \
-          -Dsonar.login=${SonarQube user token}
+          -Dsonar.login=${SONAR_TOKEN}
       """
     }
   }
