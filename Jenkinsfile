@@ -20,47 +20,40 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
-  steps {
-    withSonarQubeEnv('sonarqube')
-    withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
-      sh """
-        mvn sonar:sonar \
-          -Dsonar.projectKey=hello-java \
-          -Dsonar.host.url=http://44.211.175.215:9000 \
-          -Dsonar.login=${SONAR_TOKEN}
-      """
+      steps {
+        withSonarQubeEnv('sonarqube') {
+          withCredentials([
+            string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')
+          ]) {
+            sh '''
+              mvn sonar:sonar \
+              -Dsonar.projectKey=hello-java \
+              -Dsonar.login=$SONAR_TOKEN
+            '''
+          }
+        }
+      }
     }
-  }
-}
 
     stage('Quality Gate') {
-  steps {
-    timeout(time: 10, unit: 'MINUTES') {
-      waitForQualityGate abortPipeline: false
+      steps {
+        timeout(time: 10, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+
+    stage('Deploy to Tomcat') {
+      steps {
+        sh '''
+          rm -rf $TOMCAT_HOME/webapps/hello-1.0*
+          cp target/hello-1.0.war $TOMCAT_HOME/webapps/
+          $TOMCAT_HOME/bin/shutdown.sh || true
+          sleep 5
+          $TOMCAT_HOME/bin/startup.sh
+        '''
+      }
     }
   }
 }
 
-
-  stage('Deploy to Tomcat') {
-  steps {
-    sh '''
-      echo "Stopping Tomcat..."
-      $TOMCAT_HOME/bin/shutdown.sh || true
-      sleep 3
-
-      echo "Removing old deployment..."
-      rm -rf $TOMCAT_HOME/webapps/hello-1.0*
-
-      echo "Deploying new WAR..."
-      cp target/hello-1.0.war $TOMCAT_HOME/webapps/
-
-      echo "Starting Tomcat..."
-      $TOMCAT_HOME/bin/startup.sh
-    '''
-  }
-}
-
-
-  }
-}
