@@ -20,13 +20,18 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv('sonarqube') {
-          sh 'mvn sonar:sonar'
-
-        }
-      }
+  steps {
+    withCredentials([string(credentialsId: 'sonar-user-token', variable: 'SONAR_TOKEN')]) {
+      sh """
+        mvn sonar:sonar \
+          -Dsonar.projectKey=hello-java \
+          -Dsonar.host.url=http://44.211.175.215:9000 \
+          -Dsonar.login=${SONAR_TOKEN}
+      """
     }
+  }
+}
+
     stage('Quality Gate') {
   steps {
     timeout(time: 10, unit: 'MINUTES') {
