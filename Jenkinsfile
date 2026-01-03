@@ -1,9 +1,7 @@
 pipeline {
   agent any
 
-  environment {
-    TOMCAT_HOME = "/home/ubuntu/apache-tomcat-11.0.15"
-  }
+ 
 
   stages {
 
@@ -15,14 +13,14 @@ pipeline {
 
     stage('Build') {
       steps {
-        sh 'mvn clean package'
+        sh 'mvn clean verify'
       }
     }
 
    stage('SonarQube Analysis') {
   steps {
     withSonarQubeEnv('sonarqube') {
-     sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=hello-java'
+     sh 'mvn sonar:sonar -Dsonar.projectKey=hello-java'
     }
   }
 }
