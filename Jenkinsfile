@@ -26,7 +26,7 @@ pipeline {
         mvn sonar:sonar \
           -Dsonar.projectKey=hello-java \
           -Dsonar.host.url=http://44.211.175.215:9000 \
-          -Dsonar.login=${SONAR_TOKEN}
+          -Dsonar.login=${SonarQube user token}
       """
     }
   }
